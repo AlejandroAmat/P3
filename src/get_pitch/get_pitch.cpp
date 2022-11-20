@@ -59,11 +59,10 @@ int main(int argc, const char *argv[]) {
   int n_shift = rate * FRAME_SHIFT;
 
   // Define analyzer
-  PitchAnalyzer analyzer(n_len, rate, PitchAnalyzer::RECT, 50, 500);
+  PitchAnalyzer analyzer(n_len, rate, PitchAnalyzer::HAMMING, 50, 500);
 
   /// \TODO
-  /// Preprocess the input signal in order to ease pitch estimation. For instance,
-  /// central-clipping or low pass filtering may be used.
+  /// Preprocessing (Clipping) is done inside pitch_analyzer
   
   // Iterate for each frame and save values in f0 vector
   vector<float>::iterator iX;
@@ -77,6 +76,26 @@ int main(int argc, const char *argv[]) {
   /// Postprocess the estimation in order to supress errors. For instance, a median filter
   /// or time-warping may be used.
 
+
+
+//Median filter of 3 coefficients
+  vector<float> filter;
+  vector<float> f0_filtered;
+
+  f0_filtered.push_back(f0[0]); //We do not take into account f0(0) anf f0(size-1) as we apply a filter that gets f[n-1], f[n] and f[n+1];
+  for(unsigned int l =1; l<f0.size()-1; l++){
+
+    for(int k =-1; k<2; k++){
+      filter.push_back(f0[l+k])  ;
+      }
+
+    sort(filter.begin(), filter.end());
+    f0_filtered.push_back(filter[1]);
+    filter.clear();
+
+  }
+  f0_filtered.push_back(f0[f0.size()-1]);
+
   // Write f0 contour into the output file
   ofstream os(output_txt);
   if (!os.good()) {
@@ -85,7 +104,7 @@ int main(int argc, const char *argv[]) {
   }
 
   os << 0 << '\n'; //pitch at t=0
-  for (iX = f0.begin(); iX != f0.end(); ++iX) 
+  for (iX = f0_filtered.begin(); iX != f0_filtered.end(); ++iX) 
     os << *iX << '\n';
   os << 0 << '\n';//pitch at t=Dur
 
