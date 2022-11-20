@@ -333,6 +333,27 @@ Ejercicios de ampliación
         ![Alt text](./img/clipping.jpg?raw=true "Optional Title")
 
 
+         ```c
+        float max_signal = *std::max_element(x.begin(), x.end());
+        float Cl = 0.1133*max_signal;
+        for(auto it = x.begin(); it<x.end(); it++){
+        if(abs(*it)<Cl) *it=1e-10;
+        else if(*it > Cl) *it+=1.317*Cl;
+        else if(*it < -Cl) *it-=1.3117*Cl;
+        }
+         ```
+
+- PostProcesado
+    * Filtro de Mediana de 3 coeficientes
+
+
+
+
+- Optimización
+
+
+
+
 
 Evaluación *ciega* del estimador
 -------------------------------

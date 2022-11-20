@@ -123,7 +123,7 @@ namespace upc {
     // }
 
     //Center Clipping
-     float max_signal = *std::max_element(x.begin(), x.end());
+    float max_signal = *std::max_element(x.begin(), x.end());
     float Cl = 0.1133*max_signal;
     for(auto it = x.begin(); it<x.end(); it++){
         if(abs(*it)<Cl) *it=1e-10;
