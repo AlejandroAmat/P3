@@ -5,6 +5,13 @@
 #include "pitch_analyzer.h"
 using namespace std;
 static int numero= 0;
+static int segments =0;
+FILE *r1 = fopen("r1.txt", "w+");
+FILE *rmax = fopen("rmax.txt", "w+");
+FILE *zcrf = fopen("zcr.txt", "w+");
+FILE *potf = fopen("pot.txt", "w+");
+
+
 /// Name space of UPC
 namespace upc {
   void PitchAnalyzer::autocorrelation(const vector<float> &x, vector<float> &r) const {
@@ -17,6 +24,7 @@ namespace upc {
       r[l] /= x.size();
     }
 
+     
     if (r[0] == 0.0F) //to avoid log() and divide zero 
       r[0] = 1e-10; 
   }
@@ -93,9 +101,6 @@ namespace upc {
     ///   or compute and use other ones.
     numero++;
     cout<<"("<<numero+1<<") pot:"<<pot<<", zcr:"<<zcr<<", r1norm:"<<r1norm<<", maxnorm:"<<rmaxnorm<< endl;
-      //if((rmaxnorm >= 0.72 || r1norm >0.9) && pot>-15.7  ) return false;
-      // if(pot<-10) return true;
-    // if((r1norm>0.86 && ((pot>-36 ||  rmaxnorm>0.6) && zcr<120))) return false;
     bool unvoiced = true;
     if(r1norm>0.72668 && zcr <149 && pot>-45 &&  rmaxnorm >0.34) unvoiced=false;;
 
@@ -112,7 +117,7 @@ namespace upc {
     //   *it /= max_signal;
     // }
 
-    //Center Clipping
+    // Center Clipping
      float max_signal = *std::max_element(x.begin(), x.end());
     float Cl = 0.1133*max_signal;
     for(auto it = x.begin(); it<x.end(); it++){
@@ -169,11 +174,32 @@ namespace upc {
    	    zcr++;
       }
       
+      fprintf(r1 , "%f \n", r[1]/r[0]);
+      fprintf(rmax , "%f \n", r[lag]/r[0]);
+      fprintf(zcrf , "%f \n", zcr);
+      fprintf(potf , "%f \n", pot);
 
     if (unvoiced(pot, r[1]/r[0], r[lag]/r[0], zcr))
       return 0;
-    else
+    else{
+        
+        if(segments == 4){
+          FILE *f_x = fopen("res_x.txt", "w+");
+          FILE *f_r = fopen("rex_r.txt", "w+");
+          for(unsigned int i =0; i<x.size(); i++){
+            fprintf(f_x , "%f \n", x[i]);
+            
+          }
+          for(unsigned int i =0; i<r.size(); i++){
+            fprintf(f_r, "%f \n", r[i]);
+            
+          }
+          
+          fclose(f_r);
+          fclose(f_x);
+        }
+      segments++;
       return (float) samplingFreq/(float) lag;
-  }
+  }}
 }
 
