@@ -273,6 +273,67 @@ Ejercicios de ampliación
   la longitud del filtro.
    
 
+
+
+- Preprocesado
+    * Hamming
+    
+        Se ha
+
+
+      ![Alt text](./img/hamming.jpg?raw=true "Optional Title")
+
+
+        El código necesario:
+
+
+         ```c
+          case HAMMING:
+          /// \TODO Implement the Hamming window
+     
+          if(frameLen%2==0){ //if framelen is even
+          unsigned int half = frameLen/2;
+
+            for(unsigned int n =0; n<half; n++){ //Hamming Window for first half
+            window[n] = 0.5 * (1-cos(2*M_PI*(n+1)/frameLen+1));
+            //fprintf(hamming, "%f \n", window[n]);
+            }
+
+            unsigned int idx = half-1;
+            for(unsigned int n=half; n<frameLen; n++){ //Symmentric window for the second half
+              window[n]= window[idx];
+              idx--;
+              //fprintf(hamming, "%f \n", window[n]);
+            }
+
+
+          }
+          else{
+
+              unsigned int half = (frameLen + 1 )/2;
+
+            for(unsigned int n =0; n<half; n++){ //Hamming Window for first half
+            window[n] = 0.5 * (1-cos(2*M_PI*(n+1)/frameLen+1));
+            //fprintf(hamming, "%f \n", window[n]);
+            }
+
+            int idx = half-2;
+            for(unsigned int n=half; n<frameLen; n++){ //Symmentric window for the second half
+              window[n]= window[idx];
+              idx--;
+              //fprintf(hamming, "%f \n", window[n]);
+            }
+      ```
+
+
+    * Center Clipping
+
+
+
+        ![Alt text](./img/clipping.jpg?raw=true "Optional Title")
+
+
+
 Evaluación *ciega* del estimador
 -------------------------------
 

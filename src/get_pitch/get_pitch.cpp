@@ -25,8 +25,10 @@ Usage:
     get_pitch --version
 
 Options:
-    -h, --help  Show this screen
-    --version   Show the version of the project
+    -p FLOAT, --umbralPot=FLOAT   [default:-45]
+    -z FLOAT, --umbralZCR=FLOAT  umbral positivo central clipping [default: 149]
+    -n FLOAT, --umbralR1=FLOAT  umbral negativo central clipping [default: 0.72668]
+    -u FLOAT, --umbralRmax==FLOAT  umbral unvoiced [default: 0.34]
 
 Arguments:
     input-wav   Wave file with the audio signal
@@ -34,6 +36,11 @@ Arguments:
                     - One line per frame with the estimated f0
                     - If considered unvoiced, f0 must be set to f0 = 0
 )";
+
+
+
+
+
 
 int main(int argc, const char *argv[]) {
 	/// \TODO 
@@ -46,6 +53,10 @@ int main(int argc, const char *argv[]) {
 
 	std::string input_wav = args["<input-wav>"].asString();
 	std::string output_txt = args["<output-txt>"].asString();
+  // float umbralPot=stof(args["--umbrakPot"].asString());
+  // float umbralZCR=stof(args["--umbralZRC"].asString());
+  // float umbralR1=stof(args["--umbralR1"].asString());
+  // float umbralRmax=stof(args["--umbralRmax"].asString());
 
   // Read input sound file
   unsigned int rate;

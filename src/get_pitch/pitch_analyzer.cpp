@@ -5,11 +5,12 @@
 #include "pitch_analyzer.h"
 using namespace std;
 static int numero= 0;
-static int segments =0;
-FILE *r1 = fopen("r1.txt", "w+");
-FILE *rmax = fopen("rmax.txt", "w+");
-FILE *zcrf = fopen("zcr.txt", "w+");
-FILE *potf = fopen("pot.txt", "w+");
+//static int segments =0;
+// FILE *r1 = fopen("r1.txt", "w+");
+// FILE *rmax = fopen("rmax.txt", "w+");
+// FILE *zcrf = fopen("zcr.txt", "w+");
+// FILE *potf = fopen("pot.txt", "w+");
+// FILE *hamming = fopen("hamming.txt", "w+");
 
 
 /// Name space of UPC
@@ -44,12 +45,14 @@ namespace upc {
 
         for(unsigned int n =0; n<half; n++){ //Hamming Window for first half
         window[n] = 0.5 * (1-cos(2*M_PI*(n+1)/frameLen+1));
+        //fprintf(hamming, "%f \n", window[n]);
         }
 
         unsigned int idx = half-1;
         for(unsigned int n=half; n<frameLen; n++){ //Symmentric window for the second half
           window[n]= window[idx];
           idx--;
+          //fprintf(hamming, "%f \n", window[n]);
         }
 
 
@@ -60,12 +63,14 @@ namespace upc {
 
         for(unsigned int n =0; n<half; n++){ //Hamming Window for first half
         window[n] = 0.5 * (1-cos(2*M_PI*(n+1)/frameLen+1));
+        //fprintf(hamming, "%f \n", window[n]);
         }
 
         int idx = half-2;
         for(unsigned int n=half; n<frameLen; n++){ //Symmentric window for the second half
           window[n]= window[idx];
           idx--;
+          //fprintf(hamming, "%f \n", window[n]);
         }
 
 
@@ -117,7 +122,7 @@ namespace upc {
     //   *it /= max_signal;
     // }
 
-    // Center Clipping
+    //Center Clipping
      float max_signal = *std::max_element(x.begin(), x.end());
     float Cl = 0.1133*max_signal;
     for(auto it = x.begin(); it<x.end(); it++){
@@ -174,31 +179,32 @@ namespace upc {
    	    zcr++;
       }
       
-      fprintf(r1 , "%f \n", r[1]/r[0]);
-      fprintf(rmax , "%f \n", r[lag]/r[0]);
-      fprintf(zcrf , "%f \n", zcr);
-      fprintf(potf , "%f \n", pot);
+      // fprintf(r1 , "%f \n", r[1]/r[0]);
+      // fprintf(rmax , "%f \n", r[lag]/r[0]);
+      // fprintf(zcrf , "%f \n", zcr);
+      // fprintf(potf , "%f \n", pot);
 
     if (unvoiced(pot, r[1]/r[0], r[lag]/r[0], zcr))
       return 0;
     else{
         
-        if(segments == 4){
-          FILE *f_x = fopen("res_x.txt", "w+");
-          FILE *f_r = fopen("rex_r.txt", "w+");
-          for(unsigned int i =0; i<x.size(); i++){
-            fprintf(f_x , "%f \n", x[i]);
-            
-          }
-          for(unsigned int i =0; i<r.size(); i++){
-            fprintf(f_r, "%f \n", r[i]);
-            
-          }
+      //   if(segments == 4){
+      //     FILE *f_x = fopen("res_x_no_clipp.txt", "w+");
+      //     //FILE *f_r = fopen("rex_r.txt", "w+");
           
-          fclose(f_r);
-          fclose(f_x);
-        }
-      segments++;
+      //     for(unsigned int i =0; i<x.size(); i++){
+      //       fprintf(f_x , "%f \n", x[i]);
+            
+      //     }
+      //     // for(unsigned int i =0; i<r.size(); i++){
+      //     //   fprintf(f_r, "%f \n", r[i]);
+            
+      //     // }
+          
+      //     //fclose(f_r);
+      //     fclose(f_x);
+      //   }
+      // segments++;
       return (float) samplingFreq/(float) lag;
   }}
 }
