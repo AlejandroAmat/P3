@@ -26,9 +26,9 @@ Usage:
 
 Options:
     -p FLOAT, --umbralPot=FLOAT    umbral de potencia para estimacion pitch [default: -45]
-    -z FLOAT, --umbralZCR=FLOAT    umbral de ZCR para estimacion pitch [default: 149]
-    -n FLOAT, --umbralR1=FLOAT     umbral de R1 para estimacion pitch [default: 0.72668]
-    -u FLOAT, --umbralRmax==FLOAT  umbral de RMax para estimacion pitch  [default: 0.34]
+    -z FLOAT, --umbralZCR=FLOAT    umbral de ZCR para estimacion pitch [default: 164]
+    -n FLOAT, --umbralR1=FLOAT     umbral de R1 para estimacion pitch [default: 0.52]
+    -u FLOAT, --umbralRmax==FLOAT  umbral de RMax para estimacion pitch  [default: 0.405]
 
 Arguments:
     input-wav   Wave file with the audio signal

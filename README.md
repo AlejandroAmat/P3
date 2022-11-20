@@ -273,6 +273,39 @@ Ejercicios de ampliación
       float umbralR1=stof(args["--umbralR1"].asString());
       float umbralRmax=stof(args["--umbralRmax"].asString());
       ```
+
+      Esto ha hecho que tengamos que modificar también el archivo run_get_pitch para ejecutarlo con parámetros:
+      ```c
+      umbralPot=$1
+      umbralZCR=$2
+      umbralR1=$3
+      umbralRMax=$4
+
+
+
+
+      if [ -z "$umbralPot" ]
+      then
+          umbralPot=-45
+      fi
+      if [ -z "$umbralZCR" ]
+      then
+          umbralZCR=164
+      fi
+
+      if [ -z "$umbralR1" ]
+      then
+          umbralR1=0.52
+      fi
+
+      if [ -z "$umbralRMax" ]
+      then 
+          umbralRMax=0.405
+      fi
+
+
+      GETF0="/home/alejandro/PAV/bin/get_pitch -p $umbralPot -z $umbralZCR -n $umbralR1 -u $umbralRMax"
+      ```
 - Implemente las técnicas que considere oportunas para optimizar las prestaciones del sistema de estimación
   de pitch.
 
@@ -457,17 +490,53 @@ Ejercicios de ampliación
             ![Alt text](./img/comp_median.png?raw=true "Optional Title")
 
           * F_score
+          
             Con Filtro: 91.23
-            
+
             Sin filtro: 91.06
 
 
 
 - Optimización
 
+  De cara a la optimización, hemos optado por crear un fichero .sh (opt.sh) que itere por una serie de parámteros (Umbrales de decisión) y posteriormente ejecute el run_get_pitch junto con el evaluate. Después, mediante una pipe y grep obtenemos el "TOTAL" y ordenamos de menor a mayor.
+
+  Aquí el código:
 
 
+  ```c
+  /*!/bin/bash */
 
+  for umbralPot in $(seq -49 1 -41);do
+      for umbralZCR in $(seq 147 1 154);do
+          for umbralR1 in $(seq 0.7 0.01 0.78);do
+              echo -n "umbralPot=$umbralPot umbralZCR=$umbralZCR umbralR1=$umbralR1 umbralRMax=0.405 "
+              ./scripts/run_get_pitch.sh $umbralPot $umbralZCR $umbralR1 0.405  > /dev/null
+              /home/alejandro/PAV/bin/pitch_evaluate pitch_db/train/f0ref | fgrep TOTAL  /*Debería ser train/*f0ref pero sino lo coge como un comentario */
+              
+          done
+      done 
+  done | sort -t: -k 2n;
+  exit 0
+  ```
+
+  Tras ejecutarlo con algunas variaciones obtenemos:
+
+  ![Alt text](./img/opt.png?raw=true "Optional Title")
+
+  Finalmente, tras probarlo con muchos valores el resultado final es un 91.43%.
+
+      umbralPot=-45 umbralZCR=164 umbralR1=0.52 umbralRMax=0.396 ===>     TOTAL:  91.43 %
+
+  Los valores de treshold que cumplen el resultado son:
+
+  pot: -45dB
+
+  ZCR = 164
+
+  R1 = 0.52
+
+  RMax = 0.396
 
 Evaluación *ciega* del estimador
 -------------------------------
