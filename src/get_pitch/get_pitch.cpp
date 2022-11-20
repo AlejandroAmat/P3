@@ -25,10 +25,10 @@ Usage:
     get_pitch --version
 
 Options:
-    -p FLOAT, --umbralPot=FLOAT   [default:-45]
-    -z FLOAT, --umbralZCR=FLOAT  umbral positivo central clipping [default: 149]
-    -n FLOAT, --umbralR1=FLOAT  umbral negativo central clipping [default: 0.72668]
-    -u FLOAT, --umbralRmax==FLOAT  umbral unvoiced [default: 0.34]
+    -p FLOAT, --umbralPot=FLOAT    umbral de potencia para estimacion pitch [default: -45]
+    -z FLOAT, --umbralZCR=FLOAT    umbral de ZCR para estimacion pitch [default: 149]
+    -n FLOAT, --umbralR1=FLOAT     umbral de R1 para estimacion pitch [default: 0.72668]
+    -u FLOAT, --umbralRmax==FLOAT  umbral de RMax para estimacion pitch  [default: 0.34]
 
 Arguments:
     input-wav   Wave file with the audio signal
@@ -53,10 +53,13 @@ int main(int argc, const char *argv[]) {
 
 	std::string input_wav = args["<input-wav>"].asString();
 	std::string output_txt = args["<output-txt>"].asString();
-  // float umbralPot=stof(args["--umbrakPot"].asString());
-  // float umbralZCR=stof(args["--umbralZRC"].asString());
-  // float umbralR1=stof(args["--umbralR1"].asString());
-  // float umbralRmax=stof(args["--umbralRmax"].asString());
+  float umbralPot=stof(args["--umbralPot"].asString());
+  float umbralZCR=stof(args["--umbralZCR"].asString());
+  float umbralR1=stof(args["--umbralR1"].asString());
+  float umbralRmax=stof(args["--umbralRmax"].asString());
+
+
+
 
   // Read input sound file
   unsigned int rate;
@@ -68,9 +71,9 @@ int main(int argc, const char *argv[]) {
 
   int n_len = rate * FRAME_LEN;
   int n_shift = rate * FRAME_SHIFT;
-
+  
   // Define analyzer
-  PitchAnalyzer analyzer(n_len, rate, PitchAnalyzer::HAMMING, 50, 500);
+  PitchAnalyzer analyzer(n_len, rate, umbralPot, umbralZCR, umbralR1, umbralRmax, PitchAnalyzer::HAMMING, 50, 500);
 
   /// \TODO
   /// Preprocessing (Clipping) is done inside pitch_analyzer

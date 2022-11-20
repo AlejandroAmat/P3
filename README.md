@@ -189,7 +189,7 @@ Ejercicios básicos
 
     (II) Python(MatPlotLib):
 
-    ![Alt text](./img/com_py.jpg?raw=true "Optional Title")
+    ![Alt text](./img/com_pyy.png?raw=true "Optional Title")
 
     El código es muy parecido al de la antigua gráfica con Pyhton:
 
@@ -240,6 +240,9 @@ Ejercicios de ampliación
 
 - Usando la librería `docopt_cpp`, modifique el fichero `get_pitch.cpp` para incorporar los parámetros del
   estimador a los argumentos de la línea de comandos.
+
+
+   
   
   Esta técnica le resultará especialmente útil para optimizar los parámetros del estimador. Recuerde que
   una parte importante de la evaluación recaerá en el resultado obtenido en la estimación de pitch en la
@@ -248,6 +251,28 @@ Ejercicios de ampliación
   * Inserte un *pantallazo* en el que se vea el mensaje de ayuda del programa y un ejemplo de utilización
     con los argumentos añadidos.
 
+
+    ![Alt text](./img/help.png?raw=true "Optional Title")
+
+    Código:
+
+      ```c
+      int main(int argc, const char *argv[]) {
+      /// \TODO 
+      ///  Modify the program syntax and the call to **docopt()** in order to
+      ///  add options and arguments to the program.
+      std::map<std::string, docopt::value> args = docopt::docopt(USAGE,
+            {argv + 1, argv + argc},	// array of arguments, without the program name
+            true,    // show help if requested
+            "2.0");  // version string
+
+      std::string input_wav = args["<input-wav>"].asString();
+      std::string output_txt = args["<output-txt>"].asString();
+      float umbralPot=stof(args["--umbralPot"].asString());
+      float umbralZCR=stof(args["--umbralZCR"].asString());
+      float umbralR1=stof(args["--umbralR1"].asString());
+      float umbralRmax=stof(args["--umbralRmax"].asString());
+      ```
 - Implemente las técnicas que considere oportunas para optimizar las prestaciones del sistema de estimación
   de pitch.
 
@@ -278,10 +303,10 @@ Ejercicios de ampliación
 - Preprocesado
     * Hamming
     
-        Se ha
+        Se ha utilizado la ventana de Hamming definida por Matlab para una mejor respuesta de la estimación.
 
 
-      ![Alt text](./img/hamming.jpg?raw=true "Optional Title")
+      ![Alt text](./img/hamming.png?raw=true "Optional Title")
 
 
         El código necesario:
@@ -326,6 +351,18 @@ Ejercicios de ampliación
       ```
 
 
+      
+      Si comparamos los resultados de la ventana rectangular con la de Hamming con la base de datos obtenemos:
+
+      * Rectangular:
+
+        ![Alt text](./img/rect_fd.png?raw=true "Optional Title")
+
+      * Hamming:
+
+        ![Alt text](./img/hamming_fd.png?raw=true "Optional Title")
+
+
     * Center Clipping
 
 
@@ -343,9 +380,86 @@ Ejercicios de ampliación
         }
          ```
 
+        Comparamos el resultado del Clippping con la base de datos: (Considerar que aún no hemos hecho la optimización)
+
+        * Sin_Clipping
+
+          ![Alt text](./img/not_clipping.png?raw=true "Optional Title")
+
+        * Clipping
+
+          ![Alt text](./img/hamming_fd.png?raw=true "Optional Title")
+
+
 - PostProcesado
     * Filtro de Mediana de 3 coeficientes
 
+      Hemos considerado el Filtro de mediana y probando 2,3 y 5 coeficientes se comprueba que con 3 es mejor.
+
+      * Código 2 coeficientes (Coge el segundo):
+        ```c
+        f0_filtered.push_back(f0[0]); //We do not take into account f0(0) anf f0(size-1) as we apply a filter that gets f[n-1], f[n] 
+        for(unsigned int l =1; l<f0.size()-1; l++){
+
+        for(int k =-1; k<1; k++){
+          filter.push_back(f0[l+k])  ;
+          }
+
+        sort(filter.begin(), filter.end());
+        f0_filtered.push_back(filter[1]);
+        filter.clear();
+
+        }
+        ```
+
+      * Con 3 coeficientes :
+         ```c
+         f0_filtered.push_back(f0[0]); //We do not take into account f0(0) anf f0(size-1) as we apply a filter that gets f[n-1], f[n] and f[n+1];
+         for(unsigned int l =1; l<f0.size()-1; l++){
+
+         for(int k =-1; k<2; k++){
+            filter.push_back(f0[l+k])  ;
+            }
+
+         sort(filter.begin(), filter.end());
+         f0_filtered.push_back(filter[1]);
+         filter.clear();
+
+        }
+        f0_filtered.push_back(f0[f0.size()-1]);
+        ```
+        * Con 5 coeficientes :
+         ```c
+         f0_filtered.push_back(f0[0]); //We do not take into account f0(0),f0(1), f0(size-2) anf f0(size-1) as we apply a filter that gets f[n-2], f[n-1], f[n] and f[n+1], f[n+2];
+         f0_filtered.push_back(f0[1]); 
+         for(unsigned int l =1; l<f0.size()-1; l++){
+
+         for(int k =-2; k<3; k++){
+            filter.push_back(f0[l+k])  ;
+            }
+
+         sort(filter.begin(), filter.end());
+         f0_filtered.push_back(filter[2]);
+         filter.clear();
+
+        }
+        f0_filtered.push_back(f0[f0.size()-2]);
+        f0_filtered.push_back(f0[f0.size()-1]);
+        ```
+
+
+        Comprobando los resultados el que mejor nos da es el filtro de mediana con 3 coeficientes. (Ya se ha tenido en cuenta en las capturas de F_score)
+
+
+        * Comparativa
+
+          * Gráficas
+            ![Alt text](./img/comp_median.png?raw=true "Optional Title")
+
+          * F_score
+            Con Filtro: 91.23
+            
+            Sin filtro: 91.06
 
 
 

@@ -11,6 +11,7 @@ static int numero= 0;
 // FILE *zcrf = fopen("zcr.txt", "w+");
 // FILE *potf = fopen("pot.txt", "w+");
 // FILE *hamming = fopen("hamming.txt", "w+");
+//FILE *rect = fopen("rect.txt", "w+");
 
 
 /// Name space of UPC
@@ -85,6 +86,8 @@ namespace upc {
     case RECT:
     default:
       window.assign(frameLen, 1);
+      //for(int unsigned i =0; i< frameLen; i++)fprintf(rect, "%f \n", window[i]);
+      
     }
   }
 
@@ -107,7 +110,7 @@ namespace upc {
     numero++;
     cout<<"("<<numero+1<<") pot:"<<pot<<", zcr:"<<zcr<<", r1norm:"<<r1norm<<", maxnorm:"<<rmaxnorm<< endl;
     bool unvoiced = true;
-    if(r1norm>0.72668 && zcr <149 && pot>-45 &&  rmaxnorm >0.34) unvoiced=false;;
+    if(r1norm>umbralR1 && zcr <umbralZCR && pot>umbralPot &&  rmaxnorm >umbralRMax) unvoiced=false;;
 
     return unvoiced;
   }
@@ -128,7 +131,7 @@ namespace upc {
     for(auto it = x.begin(); it<x.end(); it++){
         if(abs(*it)<Cl) *it=1e-10;
         else if(*it > Cl) *it+=1.317*Cl;
-        else if(*it < -Cl) *it-=1.3117*Cl;
+        else if(*it < -Cl) *it-=1.317*Cl;
     }
 
    
@@ -152,9 +155,7 @@ namespace upc {
     ///	   .
 	/// In either case, the lag should not exceed that of the minimum value of the pitch.
 
-    // for (iR=iRMax = r.begin()+npitch_min; iR< r.begin() + npitch_max ;iR++ ){
-    //   if(*iR > *iRMax) iRMax = iR;
-    // }
+    
      for (iR=iRMax = r.begin()+npitch_min; iR< r.begin() + npitch_max ;iR++ ){
       if(*iR > *iRMax) iRMax = iR;
     }
